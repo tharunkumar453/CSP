@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tree Collection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .tree {
+      cursor: pointer;
+    }
+    .tree img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.2s;
+    }
+    .tree img:hover {
+      transform: scale(1.05);
+    }
+    .caption {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🌳 Tree Collection</h1>
+<div class="grid" id="treeGrid"></div>
+
+<script>
+const trees = [
+  {
+    name: "Neem Tree",
+    scientific: "Azadirachta indica",
+    height: "15–20 meters",
+    lifespan: "150–200 years",
+    description: "Used in Ayurveda for its antibacterial and antifungal properties.",
+    uses: "Medicinal, biopesticide, cosmetics",
+    image: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUSEhMWFRMWGBgXGRYXFxcaGhceIhsYGB4WGR0dHSghGBomHhcfITEiJykrMC4vGB8zODMsNygtLysBCgoKDg0OGxAQGy0lICIwMDUtNi0tLS0tKzMtKzU1KzUtLS0tLS0tLS0vLy0tLy01LS0tLy0tLy0tLS0tNS0tLf/AABEIAOEA4QMBIgACEQEDEQH/xAAcAAEAAwEBAQEBAAAAAAAAAAAABQYHBAMCCAH/xABCEAACAQIEAwUFBQYFAwUBAAABAgADEQQSITEFQWEGIlFxgQcTMkKRFFJygqEjM2KSsdGissHh8ENTYyQ0wtLxFf/EABoBAQADAQEBAAAAAAAAAAAAAAADBAUCAQb/xAA0EQACAgECAwQJAwQDAAAAAAAAAQIDEQQSITFBEyJRYQUjMnGBobHB8EKR0ZLh4vEUM1L/2gAMAwEAAhEDEQA/ANxiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCInPxHEe7pVKn3EZvoCf9IfAM5uz/ERXorU53KnzH9xY+skZlnsj45+0qYVj8ah0v8AeUZGHqEB/IZqcr6We6pZ5rmR1yzFZEREsEgiIgCIlf7bceXCYYte1R7qnjsSz/lUE+dhznM5KMXJ9DyTSWWT6sDqJ/Zy8LTLRpDayIP8InVPYttJs9QiJ/Cbanaeg/sTwwOLWqgqJ8LXsfEXIv5G1/We88TTWUBERPQIiIAiIgCIiAIiIAiIgCIiAJE9q8WlLCV2ckKUKab3buC3W7SWkB28y/Ya2bbuf50t+siueK5PyZzN4izARjnpVkr0jZ6dTMvoQwB8QTmv0vP0X2d41TxeHSvSOjDUc1YfEh6g/XQjQifnHFKCXA2+Ien9lLS/+x7jyUqjYVzYVe8pJ7oZRqPMj/IJQ0tu1pdGV6pYeDYYiJqFoREQBME9pfFXrYuqWPcphqdNddBcKT5tctfwy+Amodu+0gw9GpSpuBiGp3H8AJy5vxbkfhvy1wjHVGb4iSSwGv8ACNv8Q+koaq3L2L4la6We6j9N4I/s0/Cv9BPeRnZmozYPDMxuxoUiT4kopJknLseSLC5CVH2lcV91hfdA96sQh6U96h8svd/PJ3j/ABdMLRas9zYd1Ru7clHh58phnaLtJVxQvVIzXtcC29+6ByULmHrrcm5raq7bHYub+RFbPC2m2djz/wChwpO5o02PmVDH9TJiRHZBCMDhQwsRQpAg/gWS8sV+yvcSQ9lHjisUtMBnNgWVB1LMFA+pE9pmHtL45fHYPCKdKdWlVfX5mqIiLodCELG38azT4jPMmvAKWW0IiJ2dCIiAIiIAiIgCIiAIiIAla9oGCarhDlOiMHYXIzKA2lvm1INj4X3AllkX2mwpqYWqqgl8uZANyw7ygeokV8XKuSXgzmazFmEcRweVgQLjmP6j1Gkj8LhyHy3IYGwPUGwYf1lox2DbVXUhl0KsCCNOYO3+8gMZhyrBhp8p8wNPTLYflaYEJNrD5lHyP0LwjHLWpK4IJIGa19Dz3A0vO2ZT7K+MMK7UHN1qqCtzqGW+g6Fb/QdZq03NLb2lab5rmXa57o5E/jNYXOwn9kB26quuDqZGyliqk87FgGA6kXktk9kHLwPZPCbMr7YMz4irUe92Y2BOy62XnsPA2vKdjGIcAfKB9T3vr3gPSWfihZ2AJ1Y2v5n/AH/5fWrs+ZmYCwJJ15Df+kw623xZST6n6J7EYpqmAwzuLMaYB627oI6EC/rJsm2pkX2VpOuDoLUFn92txa2W4vltysDa3SRvtBxz08NlVQfet7sknQCxYjrmCkes2N/Z0qT6IubtsMlS7WcbFQ13DApfKmuZWUWFxysSM1x97npM2ZblV3Pxcxq1iPPuhf1lp7T8S9+UWwUaKbCwA8SNrDf08ZWaCmpU7qEs7d1Bvrsg5c7TG3OWZPqU288T9GcDS2GoDwpUxobj4Rz5+c8+0HFlwtBqzC9rADxJIA5HTW50OgM7MHTK00VrZgqg2ta4ABtYDT0Ezf2hcYZ61TD2/ZoEsf4rEswtyswXzQzXut7KrPXkW5y2RM047iHetUrZs1RqgbN4nvG48ALLYchYcp+ksBilq0qdVb5aiK4vvZgGF+tjPzXxCme6Nb95v6L/APA/Wb32Brh+H4YjkmQ+akofS6yHRy4tEdL44LBESM7R8bp4Og+Iq3KrYBV+JmOgVep/TUy83jmWORJxK92L4jXxND7TXyqKl8lJAbIoZhck6sT47EKCALkSwzyMtyyeJ5WREROj0REQBERAEREAREQCgdvsCEqrWAsKvdO/xD/Ujlf5T1lJxuFDAg7HnbbwbTf+tiRzm3Y3BpVQ06ihkNrg9DceRuJTuO9jSLvhtVtrTJJI/CWvm8jMbV6Kam7IcU+nUrWVPOUZjhalSjUFRDlqIwI6Hl5gj6g+Bm+cLxgrUadYCwqIr28Li9vSY5VoBtNLjY2/wm3K+o8NfEzS+wVa+EVD8VJmQjmNcyj+VhHo63vuPijyh8cFilP9o9Zfd0qZYgli4sN8oC2vy/eX9CJcJXO3mAFTCs4A95SsynXQXAYdbjkfATR1abplgmtXceDJeJaZm2IV29QpII/5zkN2fQGvSTKGD1ETKeZLAAG1iRc7AiTPEvgf8DH9L6Tp9lPDhWxyMRcUQ1S3K9sqk9btfzA8Jj0x3Lb4lSKzhG6Sj+0HFXZKfyrqTpYPyF+RC3Pkwl4mR9rDVXE1lqkgFi4HIqbBWX0QA9R0ml6Qk1VhdWWb33Sq49SRUceBAHLvWUjTwUsR5Tz7LYao+JpU6RActoSO6oALHMB8th67aXnjxW2U251Ft46K97/zD/aTfs3wjPilcGypvb5i3dC/qWv/AA/TOrjnCKyXJG1cT4glCmar3ygqNLbswUb9TMk7QuWdyWzG573iOX0E0Pt7QDYUm9srqbfevdLHpZifSZq1PMyre12C38yB9ZN6QsfaKPREl7e7BXsag94R90KuvjYE/wCIma97K3BwNgxJFRwQflNlOUehDebHneZFXq5izgWLEsd9LnNr9ZsHswt9gUhbXd7n7xvYnptb0nWifrPgKfaLaTMP9ovbD7XWWjRYHDJZwQNXZQzE35C3d+vjL/7TO0H2fDGml/e1BYW0AX5iT+nrMPoJo58F06XdBb6Eyzqrf0I7tn0P0f2cxiVcLQqUwFRqa2UbLpYp6EW9J98a4xRwtI1a75VGg8WPJVHM/wBACTYAmZv7Oe1lLDYasmIYhUZWS2rHPoUVehXN+YnlIriHFW4lxCjcWpGolNEtqqZgXJI2ZgLaabj5bzv/AJKUFjmzrte6sczYuGYhqlJKjpkLjNkvcqDqA2g71rXHI3Gu86oiWlyJhERPQIiIAiIgCIkX2g4wuGp5yAzE2C5gL9fEgdAeXnOZzjCLlLkjxtJZZJk2kdW47hlveshy2vlOa1/w3mY8Z41XxFQu9RlW1gisQgG+3M9TIxUJJyi535AjqSdAOp+ouJj2elXn1ceHmVnqPBGuUFwWJLFVoVW+buoW8zpefxMLRwrhkIpq/dZS1l5kNrsRtYfe6TM+E8KarVVUJapvdSUVRfVmb4ha+uUDcWJM1nAYEU1AZjUa1i7kknpqTYdL+dzrJdPbLUcVBJrr+cfnyJK5buLR1Kb6jafNWmGUqwBVgQQRcEHQgjmJznh6bqDTPihy+pA0PqDPkrXXZkqDwbuN6soIP8omjukvaX7cf7/IlMw7X9mHoOcoJo1LqjXvbMCoRudxffn430li9knAvcYU12HfxBDDoguE+ty3kw8JZ6/EEyla9N0BBvmXMpH4kuo9SDPbg7J7mmEIIVFXQg2sALG2xlOmqELu6+nLw/MkcakpZR2zMfaTV/8AVKLWK0xY/eUltfrcW/vNOkX2i4KmKotTYDPY5H5o24IO4FwL+IljVVOyvCPbIuUcIwPilPuA/wDkPr3Rby2M0H2R8HZQa7AgNqvlqF+tyfKxkNw/su+IrfZailMtVDV5FVC1b7Hc3UAj74OomxYTDLTUIgCqNABKWircnufQiqjl5Kf7Rabj3VQH9nZkYWvYmzA+tj9BKRn3PMJUYaXBsjMNDvqJqfbDAtWwrqi53WzKo3JB1t1sT5zKaYJzC9rpVGvImm462Ov/ADaV/SENtjfiji5Ynkr9dW0UEA7C+gXqfAT9B8FwaUaFOnTFkVRYa89STfUkkkknmZi3ZPhH2rFU6Vr0x36h8UB2PgGuB635XG7S5oIvDkd6dc2Yt7R+Ne9xLBMyvSZqdr6d0nvA6WJJOnRfKVChTJRzYfEg8BtU0PqBtrJ3tjSH2msACv7R9DqQbm46i97dLSAxVRlTLcZSQSfHkOV7D/XaVG97fmyJvLPpFLvZBYXFgSPUm2g8T4AS4ez3AGrj6TobJSDPY81sU0HiTUuepY+ANX4fQyqW0IPdXnq2+nRQQb6d8bzWPZZwpqdF69RMrVSMh5mmBoegJJ89DtaSUR32pLodVrMi8RETYLgiIgCIiAIiIB5YmtkRnIvYE2uAT0FyBc7akTLOM8YbEOXdFpnYAMxIG1rnTrpYbyd7cY8OQqswFNiCtiAzXtm62sQPWUlmvcnRRubHy0ubXOgH9gTPn/SGp7WXZx5L5sp3WZe1HpmuMzHuXsdiSd8oGxNvHYegP1hwXYUlFszWVBffvepOm58eQ0nJ74M1tADoovoBuBfxva55kkzTOxXZ5aSJXdCKzLs26g87fKxFr8x6kSDT6aVstq/0cVwcng7uynAvs1LvWNV7FyNQPBR0H6knpaS4jxCnRTNUYDkASAWP3VvuZ8cVxhppdQC50VSTr4nTUgDX0mX8dSq9X31armK3A5WF9gBy9JrXaiGmiqq1x/OZZnNVrCO3tV2gxLvlWp7oC4/ZVG1/NpcjyHpK/hOL4pSMlaqSDcEMxJ6EH4ttj1jE4rxayi12tpflYDdj4dPlANq9i+JM91pgqp0yjVnvYAMd2Jt8I020vrMzM5vLZWy28tmudjONYvElld6bKnxOq6i+yhgQpbyBA5m/dlnHCKI2QA/eUlW/mBv+sj+w/BzhcHTpsLVDd6n4m1IPjYWX8snWNtTtNmnTranZ3n58cF2GdvE4/slRfgrN5OA4+ujfrPk4isvxUg4+9TYX/la36Eyt8b9omHosVpD35HzK4CXuQVzWO1t7W1E5OE+0JqxfNQFJUXNcs7a5goX4B3jfQXuTpOJ3015xJr3Zf1z8jntI5xktKYuj77Oe45TKS6lCRe4W5Ava5+slAZ4U8OCL1FBY2vcXHkL8h/vznieFp8mamf4GKj6fCfpJKlbFNtLjx8H91n4kh3Smdpuy9qn2qj98NVTpcZnX0uSp31trobJ7vEL8LpUHg4yn6rp/hnlieJFUb3tF10Oosy7eI/tONS4TrasTXw+6yvmcyipcGcXYjgAwmHF9a1QK1Vjqb20W/MLcjzJPOWGcmC4hSqAZHVtNr6/TedcsU7di2cj2KSWEYr26wHusbWAvZz7wX5hgCfMZ8w9NfE07Fgl9bchbw/8A3/WfoHtL2ao4xLOMtQAhKo3TnqL2Zb8j1tY6zH8T2Wr0sSKVRe8zqnd1DqbnMt/FUa1+a2mbfU6ZOXRlWcHF5PHA8OerUo4akCWYA7fDnCsWboqZLnT4PpvOBwq0qaUk+Gmqot97AAC/oJD9lOzaYVS5AOIqa1HGoFzf3aX2QH62v4AT8uaSh1xzLmyauG3ixERLZKIiIAiIgCcXGcUKVCo5YrZSARvc6C3W5E7ZVfaPjDTwoUG2dwD42ALaeBuB+sh1E9lUpeRxN4i2Z1xPFXbKvM2A5m526nX9ZG16wByAiwNyR8zbEjprYdBfTMZ5e+3bmbqNdvFvoco/EeYlt7E9i2rsK+IGWitrLzq6D6J13Ou28wKaHJqK5lKMW3hHd2C7L5qnvsRTNqdsgYWDNuGtzyj9eomlz+IoAAAAA0AGw6CR3aLH+5w9SoL5rZVta+Zu6LX00Jv6Tcqqjp63+7LsYqETixPEVL1SSLU+5axuNrknqeXgAZmvaLiGctZrIurEWNtdABzJ5Dx3sLkfOP4i1KkKCFmd271zqzMRzO7Em1zqZVuIYzN3QQUGub7zbF/LUqOmuhJmM27Jbn1Kkpbj5xmLLtewAW+Vb6D15kkC55m2wsBqXsz7Gimq4zEKPesL00I/dg7OR98j6A+J0jfZj2RLlMbWFlU3poV+O21TX5QdRpra/IX1aaOl0/6pL3E1Vf6mfFaqFUsxsqgknwA1MyHtv2rq1y9L3dqIPdUoc3MZm8Dvbw8xLX7ROPtSAoIr3bUuCV6gKQLttrbTl4iZRVoVK9UDKzVKjWFze5J5m3qfAazjWXuUuzT4Lmc3Ty9qPXhXC/e5qlQ+7oU7Z6hvYeCjTvMfujWSXB8R7zF4ajTQpRXEUitPS5s3eqVCN3IHkouBzLfPESpp5KX/ALake5/5X2aseVidunnYWL2Vdn2eqcbUBCJcUr/MxBVnHRQSvmx+7K9VbnJIjistJGrTzr1lRS7kKqgkk7ADnPnGYkU0ao2yi9hufADqTp6zMu11DFV6t6zKKa2y00qdxba3OYjM+vxWG3Kaeo1KqXmWpz2ltx/bWhTbLlZxa+Zctv8ANrO3gvE/tQzFMqpa6k37x7y36hSHtb50My12sMzkMBcIrMHFRha/M91QbtqL6LzNtH9nyn7GrHUvUqsSdyc7C566Slp77L7Nsnw5nFdkpSwyaxPDaVT46ak+NrH6jWcw4Y6fuazr/C/7Rf17w+sk4mjKmDeccfLg/wB0TkZ9srJ+9pZh96kc31U976XnlSxFGvXVlIYqMw8QRnW1jqDaoZMSM4tgab2OT9qdFYEqw6kjXKN/6akSC6uajlPKTTw/plfwwScSGFXEUPjX39L7yfvFH8S/P6ayRwWNp1VzU2DDY23B8CNwehk8LlJ4fB+D/MP4A6IiJKBERAEREATN/bJjCFw9IWuzO1+YtlUa8gcxv5TSJk3tPw1SvxGjQp/E1NEXewLvUuT0ygk9BK2rfq8eJFb7OCH7D9nPt1U5s4w9OwLAWzc8l76Mb5ja9rna4M2vB4VKSLTprlRAAAOQ/wBT1njwjhyYeilGmLKgtsBc82NuZOp852T3T0KtZ6nUIbUJXe2mPalTTKD8RZja4AUczyNyCPIyxTN/bLXYJQANl/aE9T3APoCfrPNW/Uy/Op5a8QZnPEccXL1L6sSi9Bbvkab2YKPxNzEunsy7Ie9IxmIW6A3pKfnI/wCoR90HbxIvsBeodm+CtjMVTwwJCgDORuqjvVD0OZio6ss/Q1GkFUKoAVQAANgBoAOkqaWhSeXyRFVDPFn3POvVyqzfdBPIbC/PaekiO1YvhaqgsMwC93fUi/La179LzRsltg5eCLEnhZM37W+7fFfFmLjM5zG1+QF9lAsAOm0gWKqrsvdzXpKb3uu1V9ttkvf5m8Jw4mozVMoNiTu2w8WNtgLXPgAZ5V8ZmIyg5AMqg7gdf4jfMerTASb4soeZO4ai+MrJh6K6EWJ2CjYueg3tz2FribZgcItKmlJBZUUKPTmfE85U/Zv2dNCj72tTC13uBf4lTTunwJIvbyvreW/EVlRWdyFVQWJOwA1JM1tJVsjulzf0LVUdqyypdsscarrg6YJIyu7a2GvdXTfxPpbXaA43iipFDNYkG7WBCqBdmOuoABPK+0tdHEgUPf5cpa78rm9yGPhvty2mX4/H5mJbU1iQSOSK2lh/FUU3vypDxvMy+TnLd4kM3l5PjEVlazAEBe6F3IUXOvidSW6ljzmwdkMKaeCoKws2QMR4FiXIPUZpl/YzBNXxaogBRbPUYi4VRcDQj4jsPU6gTaJc9H1NNz+B3RHnISJ472go4Vb1DdiLhBa52HOwG/M68ryM7adp1w6mlTe1cjkAxTwzX0W+tr+G3MZNVYszOzszk3Je5ZuW+t/UyTU6zY9sOZ1Zdt4Ivr+0t2ISlhQWY2W9Xc8tMo+l5cuB53pitVINSooOgsqruAvOx3111F9pkeCwOVlpn967pTe2X9mGOUoGHzcmN/4RzzbcBONHOd0nKbylyFUpSzk/s4MZwpHb3ik06v8A3E0J6MNnHQ/pO+JoThGaxJE5EjiT0dMUoC7Csl8h/GN6Z89Nd5KqwIuDcHmIYX0OokU/DXpHNhSAOdFv3Z/B/wBs+WnQbyLv18u8vmv5+vvPCWicWA4ktQlbFKi/FTbRh18GGmhFwZ2yWE4zWYnoiInQEh6vBFbGpizqUpFB0a5sw/K7j1kxE5lBS5njWREROj0TP/bJQBwtJv8Ay5PRlYn/ACCaBIHtxww4jBVaajM4AdANyykNYdSAR6yK+O6to4sWYsq3sZ4fajXxR3q1Cq/hXUn1ZiPyiaPKx7NKGTh1FetU/WtUMs88oSVawewXdQlP9pfEzRw6BXys7NoNyMpB9BmHqR1lwmW+17HoXp0ApNUKCDcAd8kZfO6D6zjVvFT8zm14iZx7yys3zOSo8t3+twvUFxLp7L+zj1a64ipT/YLdgW2ZwbADXcEE3/h6yrcG4NUxeIWjRFwRYNrlCg61D4Akk+b25zf+BcNGGw9OgGLZFsWPM7k25C+w8JU09O+WXyRDXDLyd8he2BT7MwfNlL0hZTYt+0Xu+Xj0vJqQPbOmpoKzsQiVUZrX1vdAP5nX6S9qP+qXuJ5+yyqdoMbaj7mnoCAF8BsLX8NRrylBRleqSD+z0CE8lFlW/WwF+t/GTva3HHMeQCHTwv8AswR4WL39N5ydiuCfaq9NcwyA5nsRmygX06Xyr+aY6i3wRUay8Go9g+GU6WGD0x+97+bmw2U/htqOjX5yX4zijSou4IW1u8RcLcgZyOYF726cp2KttBoBylD9oeIesFohStJWDFjYCoRsANbqDrqNwCNgZp2yVFOF8CzJqECvYzArTd2DF7knMSQzXJuWNt76zhovkHvS1qjAmlch8tv+pzsbgqv4WP3Z6ULtUyMe7bvEG2nw6eBJIAJsLlb6T+cQu1wy5WA0UbKBYZF55QLWHKx8Zg82U/M9uA0/f4+iqiwzip0CqRU+hyges2OUP2YcGKrUxTrYv+zp3+6Pib8zAfyA85fJu6GvbXl9S3THEc+IiIlwmEREA5cdgEqgZrhl+F10ZD4qfTY3BtqDOfD4x0YUq9rnRKg0V+hHyvblz1tsbSU869FXUqwup3B/5oeshnVl7ocH9ff+ZQPSJE//AMMf9+v/ADj/AOs/s47TUf8Ahf1f4glYiJZAiIgCIiAeWHoKi5UFluTYbC5JNvUz1iJ4kksICYr7RqgfHVct2ZciADfMVCgDr8RHVRNqlR4V2TK42piqtiA9R6Y31Y6MfwroB4s3gJV1cJT2xXV/Yiti5YSPXsF2VGCo3cA4ioAXI+XmKY6DmeZ6AAWmIlmEFBYRIkksISP7QKpw1bOCyim7EDfQFtOtxpJCfNRAwKkXBBBHiDpaJLcmg1lGCdruIpVc+6JKdxR1vmbX1X/mk0n2X8B9xhhWcD3lXUGwuE+UA7kNYN6jwmVN2dZcZ9iDEk11phueW7jMfy96foelTCgKosAAAPADQCUdLX3m/AgqjxycvGMZ7mhVq2vkRmA8SBoPU6TKMZxlqiD3hzN0225Dw/tzl+7flPsw95fJ71LqNM2+l+nxfktzvMlxDipUCAgIx16KO8zdbKCfSQa9uVij0SOb292DuQlaY0F37zjUHLYhAdfAl+udOazt4Ph6+IxKJTAvozsRdVWwzMw5m5sBzJG2pHhRs/f+EH5bWy7WA12Gw8vAzRuw/Dvd02ci2fLY/eUC4byOb9JW09PaWKL5dSOEN0sFhw1EIqoNlAH+5tznpETfSxwReERE9AiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgGd4vgRTj1Kv/0616g6MtGojDoPhPm00SeNbCqzI5HepklT5gqR5a/oJ7SOENrl5v7HMY4yUz2nUx7qizE2FQjKBuSjWc9FsfO8yOnUALvrrZB6nMxHj3VykeFSap7X8TUp4SmULAGrla3w2KOO/wCtrdbTKMBgqlY06dNczsTYDmzNl1tsMqKb8t5naqPrG/cV7V3i89huCjF+8Sop90oF3DEG5uAF68yf7zVqFJUVUUWVQFAGwAFgPpI7s5wVMJQWimp3dte+1gC3S9tuUlJd09Krj5vmTVw2oRESwSCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgFU9p+A97w6t407VR+Xe/5Sf0lV9jfDLvUxB2RKaL5lBmPmALfnM07G4VatN6T/AAurIfIgg/oZUPZlgThkr4WppXSoCR95ciItRfFWyE9M1jrK1kF2sWyOUe+mXaIiWSQREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBPkoL3sLjY8xPqIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIB//9k=",
+    video: "GWtg_xR3gL0?si=kLLz159w5Q3jVhN-"
+  },
+  {
+    name: "Banyan Tree",
+    scientific: "Ficus benghalensis",
+    height: "20–25 meters",
+    lifespan: "200–300 years",
+    description: "Known for its aerial roots and sacred value.",
+    uses: "Shade, temples, community spots",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Banyan_tree.jpg/320px-Banyan_tree.jpg",
+    video: "Nv3bGmbuR9E"
+  },
+  {
+    name: "Peepal Tree",
+    scientific: "Ficus religiosa",
+    height: "25–30 meters",
+    lifespan: "500+ years",
+    description: "Sacred in Hinduism and Buddhism. Releases oxygen at night.",
+    uses: "Religious, medicinal, air purification",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Ficus_religiosa.jpg/320px-Ficus_religiosa.jpg",
+    video: "mBtEp3zK1cQ"
+  },
+  {
+    name: "Mango Tree",
+    scientific: "Mangifera indica",
+    height: "10–40 meters",
+    lifespan: "100–300 years",
+    description: "India's national fruit tree. Known for delicious mangoes.",
+    uses: "Fruits, wood, shade",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Mango_tree.jpg/320px-Mango_tree.jpg",
+    video: "H4cEJCK-P24"
+  },
+  {
+    name: "Gulmohar Tree",
+    scientific: "Delonix regia",
+    height: "10–15 meters",
+    lifespan: "30–40 years",
+    description: "Bright red-orange flowering tree, often in cities.",
+    uses: "Ornamental, shade",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Gulmohar.jpg/320px-Gulmohar.jpg",
+    video: "KxTxQ3rImIQ"
+  },
+  {
+    name: "Ashoka Tree",
+    scientific: "Saraca asoca",
+    height: "6–9 meters",
+    lifespan: "Up to 100 years",
+    description: "Used in traditional medicine and sacred rituals.",
+    uses: "Medicinal, cultural",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Ashoka_tree.jpg/320px-Ashoka_tree.jpg",
+    video: "jKxg_F1loGk"
+  },
+  {
+    name: "Teak Tree",
+    scientific: "Tectona grandis",
+    height: "30–40 meters",
+    lifespan: "100–150 years",
+    description: "Famous for high-quality durable timber.",
+    uses: "Furniture, shipbuilding, flooring",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Teak_Tree.jpg/320px-Teak_Tree.jpg",
+    video: "qD4cAX9e8T0"
+  },
+  {
+    name: "Coconut Tree",
+    scientific: "Cocos nucifera",
+    height: "20–30 meters",
+    lifespan: "60–80 years",
+    description: "Vital in tropical regions. Source of oil, fiber and water.",
+    uses: "Oil, milk, coir, timber",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Coconut_tree.jpg/320px-Coconut_tree.jpg",
+    video: "bLNOJsH0lCo"
+  },
+  {
+    name: "Jackfruit Tree",
+    scientific: "Artocarpus heterophyllus",
+    height: "8–25 meters",
+    lifespan: "100+ years",
+    description: "Produces the largest tree fruit. Common in South India.",
+    uses: "Fruit, seeds, wood",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Jackfruit_tree.jpg/320px-Jackfruit_tree.jpg",
+    video: "KLW8gRTHaSM"
+  },
+  {
+    name: "Drumstick Tree",
+    scientific: "Moringa oleifera",
+    height: "6–12 meters",
+    lifespan: "20–30 years",
+    description: "Superfood tree rich in nutrients. Called 'miracle tree'.",
+    uses: "Food, water purification, medicine",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Moringa_oleifera.jpg/320px-Moringa_oleifera.jpg",
+    video: "yTqR8TihM9Q"
+  }
+];
+
+const grid = document.getElementById('treeGrid');
+
+trees.forEach(tree => {
+  const div = document.createElement('div');
+  div.className = 'tree';
+  div.innerHTML = `
+    <img src="${tree.image}" alt="${tree.name}">
+    <div class="caption">${tree.name}</div>
+  `;
+  div.onclick = () => {
+    const newTab = window.open();
+    const videoId = tree.video;
+    const sideStrip = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTydRn_57ZMT8ZXF1oJmWq_hXqgprAnUPHi0g&s"; // Vertical Save Tree image
+
+    newTab.document.write(`
+      <html>
+      <head>
+        <title>${tree.name} Details</title>
+        <style>
+          body {
+            font-family: Arial;
+            padding: 20px;
+            margin: 0;
+            background-color: #f8fff8;
+          }
+          table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+          }
+          th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+          }
+          th {
+            background-color: #e6ffe6;
+          }
+          h2 {
+            text-align: center;
+            margin-top: 20px;
+          }
+          .main-image {
+            display: block;
+            margin: 10px auto 30px auto;
+            max-width: 300px;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+          }
+          iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+          }
+          .side-strip {
+            position: fixed;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            object-fit: cover;
+            z-index:-1;
+          }
+          .left-strip {
+            left: 0;
+          }
+          .right-strip {
+            right: 0;
+          }
+        </style>
+      </head>
+      <body>
+        <img src="${sideStrip}" class="side-strip left-strip" />
+        <img src="${sideStrip}" class="side-strip right-strip" />
+        <h2>${tree.name} Details</h2>
+        <img src="${tree.image}" alt="${tree.name}" class="main-image" />
+        <table>
+          <tr><th>Attribute</th><th>Value</th></tr>
+          <tr><td>Name</td><td>${tree.name}</td></tr>
+          <tr><td>Scientific Name</td><td>${tree.scientific}</td></tr>
+          <tr><td>Height</td><td>${tree.height}</td></tr>
+          <tr><td>Lifespan</td><td>${tree.lifespan}</td></tr>
+          <tr><td>Description</td><td>${tree.description}</td></tr>
+          <tr><td>Uses</td><td>${tree.uses}</td></tr>
+          <tr>
+            <td>Reference Video</td>
+            <td>
+              <iframe src="https://www.youtube.com/embed/${videoId}?controls=1"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `);
+  };
+  grid.appendChild(div);
+});
+</script>
+
+</body>
+</html>
